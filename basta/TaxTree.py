@@ -81,5 +81,5 @@ class TTree(object):
         #    return ts[:ts.index("unknown")]
         #except ValueError:
         #    return ts
-        ts = string.split(";")
+        ts = string.decode('utf-8').split(";")
         return ts

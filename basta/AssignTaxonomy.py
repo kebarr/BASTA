@@ -160,13 +160,13 @@ class Assigner():
 
     def _get_tax_list(self, hits, map_lookup, tax_lookup, taxa, nofo_map):
         for hit in hits:
-            taxon_id = map_lookup.get(hit['id'])
+            taxon_id = map_lookup.get(hit['id'].encode('utf-8'))
             if not taxon_id:
                 if not hit['id'] in nofo_map:
                     self.logger.warning("\n# [BASTA WARNING] No mapping found for %s" % (hit['id']))
                     nofo_map.append(hit['id'])
                 continue
-            tax_string = tax_lookup.get(taxon_id.strip("\n"))
+            tax_string = tax_lookup.get(taxon_id.decode('utf-8').strip("\n").encode('utf-8'))
             if not tax_string:
                 if not taxon_id in nofo_map:
                     self.logger.warning("\n# [BASTA WARNING] No taxon found for %d" % (int(taxon_id)))
@@ -174,7 +174,7 @@ class Assigner():
                     continue
                 else:
                     continue
-            if tax_string.startswith("unknown;unknown;unknown;unknown;unknown;unknown;"):
+            if tax_string.startswith("unknown;unknown;unknown;unknown;unknown;unknown;".encode('utf-8')):
                 continue 
             taxa.append(tax_string)
 
