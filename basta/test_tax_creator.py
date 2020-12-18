@@ -9,7 +9,7 @@ class TestDB(unittest.TestCase):
     def setUp(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         self.pwd = dir_path
-        with open(os.path.join(self.pwd,"names.tab"), "w") as f:
+        with open(os.path.join(self.pwd, "names.tab"), "w") as f:
             f.write("2|\tBacteria|\tBacteria <prokaryotes>|\tscientific name|\n")
             f.write("1|\troot\t|\t|\tscientific name|\n")
             f.write("7|\tAzorhizobium caulinodans|\t|\tscientific name|\n")
@@ -22,7 +22,7 @@ class TestDB(unittest.TestCase):
             f.write("28216|\tBetaproteobacteria|\t|\tscientific name |\n")
             f.write("131567|\tcellular organisms|\t|\tscientific name |\n")
 
-        with open(os.path.join(self.pwd,"nodes.tab"), "w") as g:
+        with open(os.path.join(self.pwd, "nodes.tab"), "w") as g:
             g.write("1|\t   1   |\tno rank |\t|   8   |   0   |   1   |   0   |   0   |   0   |   0   |   0   |       |\n")
             g.write("2|\t131567  |\tsuperkingdom    |\t|   0   |   0   |   11  |   0   |   0   |   0   |   0   |   0   |       |\n")
             g.write("6|\t335928  |\tgenus   |\t|   0   |   1   |   11  |   1   |   0   |   1   |   0   |   0   |       |\n")
@@ -35,39 +35,39 @@ class TestDB(unittest.TestCase):
             g.write("28216|\t2|\tphylum  |\t|   0   |   1   |   11  |   1   |   0   |   1   |   0   |   0   |       |\n")
             g.write("131567|\t1|\tno rank |\t       |   8   |   1   |   1   |   1   |   0   |   1   |   1   |   0   |       |\n")
 
-        self.nodes = os.path.join(self.pwd,"nodes.tab") 
-        self.names = os.path.join(self.pwd,"names.tab") 
+        self.nodes = os.path.join(self.pwd, "nodes.tab") 
+        self.names = os.path.join(self.pwd, "names.tab") 
 
 
     def tearDown(self):
-        os.remove(os.path.join(self.pwd,"names.tab"))
-        os.remove(os.path.join(self.pwd,"nodes.tab"))
+        os.remove(os.path.join(self.pwd, "names.tab"))
+        os.remove(os.path.join(self.pwd, "nodes.tab"))
 
 
     def test_creator(self):
-        creator = NCBITaxonomyCreator.Creator(self.names,self.nodes)
-        self.assertIsInstance(creator,NCBITaxonomyCreator.Creator)
+        creator = NCBITaxonomyCreator.Creator(self.names, self.nodes)
+        self.assertIsInstance(creator, NCBITaxonomyCreator.Creator)
 
     def test_tree(self):
-        creator = NCBITaxonomyCreator.Creator(self.names,self.nodes)
-        self.assertEqual(len(creator.tree["1"]["131567"]),3)
-        self.assertEqual(creator.tree["1"]["131567"]["2"]["1236"]["name"],"Gammaproteobacteria")
-        self.assertEqual(creator.tree["1"]["131567"]["2"]["1224"]["28211"]["356"]["rank"],"order")
-        self.assertEqual(creator.tree["1"]["131567"]["2"]["1224"]["28211"]["356"]["335928"]["6"]["7"]["name"],"Azorhizobium_caulinodans")
+        creator = NCBITaxonomyCreator.Creator(self.names, self.nodes)
+        self.assertEqual(len(creator.tree["1"]["131567"]), 3)
+        self.assertEqual(creator.tree["1"]["131567"]["2"]["1236"]["name"], "Gammaproteobacteria")
+        self.assertEqual(creator.tree["1"]["131567"]["2"]["1224"]["28211"]["356"]["rank"], "order")
+        self.assertEqual(creator.tree["1"]["131567"]["2"]["1224"]["28211"]["356"]["335928"]["6"]["7"]["name"], "Azorhizobium_caulinodans")
         
 
     def test_fill_taxon_pre(self):
-        creator = NCBITaxonomyCreator.Creator(self.names,self.nodes)
-        self.assertEqual(creator._fill_taxon_pre_rank("species",""),"unknown;unknown;unknown;unknown;unknown;unknown;")
-        self.assertEqual(creator._fill_taxon_pre_rank("species","1;2;3;"),"1;2;3;unknown;unknown;unknown;")
-        self.assertEqual(creator._fill_taxon_pre_rank("family","1;2;3;"),"1;2;3;unknown;")
+        creator = NCBITaxonomyCreator.Creator(self.names, self.nodes)
+        self.assertEqual(creator._fill_taxon_pre_rank("species", ""), "unknown;unknown;unknown;unknown;unknown;unknown;")
+        self.assertEqual(creator._fill_taxon_pre_rank("species", "1;2;3;"), "1;2;3;unknown;unknown;unknown;")
+        self.assertEqual(creator._fill_taxon_pre_rank("family", "1;2;3;"), "1;2;3;unknown;")
 
 
     def test_fill_taxon_post(self):
-        creator = NCBITaxonomyCreator.Creator(self.names,self.nodes)
-        self.assertEqual(creator._fill_taxon_pre_rank("genus",""),"unknown;unknown;unknown;unknown;unknown;")
-        self.assertEqual(creator._fill_taxon_pre_rank("genus","1;2;3;"),"1;2;3;unknown;unknown;")
-        self.assertEqual(creator._fill_taxon_pre_rank("order","1;2;3;"),"1;2;3;")
+        creator = NCBITaxonomyCreator.Creator(self.names, self.nodes)
+        self.assertEqual(creator._fill_taxon_pre_rank("genus", ""), "unknown;unknown;unknown;unknown;unknown;")
+        self.assertEqual(creator._fill_taxon_pre_rank("genus", "1;2;3;"), "1;2;3;unknown;unknown;")
+        self.assertEqual(creator._fill_taxon_pre_rank("order", "1;2;3;"), "1;2;3;")
 
 
 

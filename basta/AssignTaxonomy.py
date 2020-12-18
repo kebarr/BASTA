@@ -39,7 +39,7 @@ from basta import DBUtils as db
 
 class Assigner():
 
-    def __init__(self,evalue,alen,ident,num,minimum,majority_percentage,directory,config_path,output,hit_count):
+    def __init__(self, evalue, alen, ident, num, minimum, majority_percentage, directory, config_path, output, hit_count):
         self.evalue = evalue
         self.alen = alen
         self.identity = ident
@@ -57,108 +57,108 @@ class Assigner():
             self.config=self._init_default_config()
 
 
-    def _assign_sequence(self,blast,db_file,best):
+    def _assign_sequence(self, blast, db_file, best):
         self.logger.info("\n# [BASTA STATUS] Assigning taxonomies ...")
         (tax_lookup, map_lookup) = self._get_lookups(db_file)
         nofo_map = []
-        out_fh = open(self.output,"w")
-        print(self.info_file)
-        for seq_hits in futils.hit_gen(blast,self.alen,self.evalue,self.identity,self.config,self.num):
+        out_fh = open(self.output, "w")
+        print((self.info_file))
+        for seq_hits in futils.hit_gen(blast, self.alen, self.evalue, self.identity, self.config, self.num):
             for seq in seq_hits:
                 taxa = []
-                self._get_tax_list(seq_hits[seq],map_lookup,tax_lookup,taxa,nofo_map)
+                self._get_tax_list(seq_hits[seq], map_lookup, tax_lookup, taxa, nofo_map)
                 lca = self._getLCS(taxa)
                 if self.info_file:
-                    self._print_info(taxa,seq)
-                self._print(out_fh,seq,lca,best,taxa)
+                    self._print_info(taxa, seq)
+                self._print(out_fh, seq, lca, best, taxa)
         out_fh.close()
 
 
-    def _assign_single(self,blast,db_file,best):
+    def _assign_single(self, blast, db_file, best):
         self.logger.info("\n# [BASTA STATUS] Assigning taxonomies ...")
         (tax_lookup, map_lookup) = self._get_lookups(db_file)
         taxa = []
         nofo_map = []
         out_fh = open(self.output, "w")
-        for seq_hits in futils.hit_gen(blast,self.alen,self.evalue,self.identity,self.config,self.num):
+        for seq_hits in futils.hit_gen(blast, self.alen, self.evalue, self.identity, self.config, self.num):
             for seq in seq_hits:
-                self._get_tax_list(seq_hits[seq],map_lookup,tax_lookup,taxa,nofo_map)
+                self._get_tax_list(seq_hits[seq], map_lookup, tax_lookup, taxa, nofo_map)
         lca = self._getLCS([x for x in taxa if x])
         if self.info_file:
-            self._print_info(taxa,"Sequence")
-        self._print(out_fh,"Sequence",lca,best,taxa)
+            self._print_info(taxa, "Sequence")
+        self._print(out_fh, "Sequence", lca, best, taxa)
         return lca
 
 
-    def _assign_multiple(self,blast_dir,db_file,best):
+    def _assign_multiple(self, blast_dir, db_file, best):
         self.logger.info("\n# [BASTA STATUS] Assigning taxonomies ...")
         (tax_lookup, map_lookup) = self._get_lookups(db_file)
-        out_fh = open(self.output,"w")
+        out_fh = open(self.output, "w")
         out_fh.write("#File\tLCA\n")
         nofo_map = []
         for bf in os.listdir(blast_dir):
             self.logger.info("\n# [BASTA STATUS] - Estimating Last Common Ancestor for file  %s" % (str(bf)))
-            lca = self._assign_single(os.path.join(blast_dir,bf),db_file)
-            out_fh.write("%s\t%s\n" %(bf,lca))
+            lca = self._assign_single(os.path.join(blast_dir, bf), db_file)
+            out_fh.write("%s\t%s\n" %(bf, lca))
         out_fh.close() 
 
 
-    def _get_lookups(self,db_file):
+    def _get_lookups(self, db_file):
         self.logger.info("\n# [BASTA STATUS] Initializing taxonomy database")
-        tax_lookup = db._init_db(os.path.join(self.directory,"complete_taxa.db"))
+        tax_lookup = db._init_db(os.path.join(self.directory, "complete_taxa.db"))
         self.logger.info("\n# [BASTA STATUS] Initializing mapping database")
-        map_lookup = db._init_db(os.path.abspath(os.path.join(self.directory,db_file)))
+        map_lookup = db._init_db(os.path.abspath(os.path.join(self.directory, db_file)))
         return (tax_lookup, map_lookup)
 
 
-    def _print(self,fh,name,lca,best,taxa):
+    def _print(self, fh, name, lca, best, taxa):
         if best:
             try:
-                fh.write("%s\t%s\t%s\n" % (name,lca,taxa[0]))
+                fh.write("%s\t%s\t%s\n" % (name, lca, taxa[0]))
             except IndexError:
-                fh.write("%s\t%s\t%s\n" % (name,lca,"Unknown"))
+                fh.write("%s\t%s\t%s\n" % (name, lca, "Unknown"))
         elif self.hit_count:
-            fh.write("%s\t%s (%d)\n" % (name,lca,len(taxa)))
+            fh.write("%s\t%s (%d)\n" % (name, lca, len(taxa)))
         else:
-            fh.write("%s\t%s\n" % (name,lca))
+            fh.write("%s\t%s\n" % (name, lca))
 
 
-    def _print_info(self,taxa,seq):
+    def _print_info(self, taxa, seq):
         ttree = self._getTT(taxa)
         if os.path.exists(self.info_file):
-            inf = open(self.info_file,"a")
+            inf = open(self.info_file, "a")
         else:
-            inf = open(self.info_file,"w")
+            inf = open(self.info_file, "w")
         inf.write("###%s\n" % (seq))
-        self._print_info_branch("",ttree.tree,inf)
+        self._print_info_branch("", ttree.tree, inf)
         inf.write("\n\n")
         inf.close()
     
-    def _print_info_branch(self,ts,t,info_file):
+    def _print_info_branch(self, ts, t, info_file):
         for b in t:
             if b == "count":
-                info_file.write("%d\t%s\n" % (t["count"],ts))
+                info_file.write("%d\t%s\n" % (t["count"], ts))
             else:
-                self._print_info_branch(ts + b + ";",t[b],info_file)
+                self._print_info_branch(ts + b + ";", t[b], info_file)
        
             
     
-    def _getLCS(self,l):
+    def _getLCS(self, l):
         tree = self._getTT(l)
         minimum = 0;
         minimum = self.minimum
-        taxon = tree.lca(minimum,len(l),self.majority_percentage)
+        taxon = tree.lca(minimum, len(l), self.majority_percentage)
         return taxon
 
 
-    def _getTT(self,l):
+    def _getTT(self, l):
         tt = ttree.TTree()
         for item in l:
-            tt.add_taxon(tt.tree,item)
+            tt.add_taxon(tt.tree, item)
         return tt
 
 
-    def _get_tax_list(self,hits,map_lookup,tax_lookup,taxa,nofo_map):
+    def _get_tax_list(self, hits, map_lookup, tax_lookup, taxa, nofo_map):
         for hit in hits:
             taxon_id = map_lookup.get(hit['id'])
             if not taxon_id:
@@ -179,17 +179,17 @@ class Assigner():
             taxa.append(tax_string)
 
                     
-    def _read_config(self,cp):
-        mandatory = ['evalue','align_length','query_id','pident','subject_id']
+    def _read_config(self, cp):
+        mandatory = ['evalue', 'align_length', 'query_id', 'pident', 'subject_id']
         config = {}
-        with open(cp,"r") as f:
+        with open(cp, "r") as f:
             for line in f:
                 ls = line.strip().split("\t")
                 config[ls[0]] = int(ls[1])
 
         for m in mandatory:
             if m not in config:
-                self.logger.error("# [BASTA ERROR] No index field defined for %s in %s!" % (b,cp))
+                self.logger.error("# [BASTA ERROR] No index field defined for %s in %s!" % (b, cp))
                 sys.exit()
         return config
     

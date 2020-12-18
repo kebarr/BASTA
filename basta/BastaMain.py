@@ -46,20 +46,20 @@ from basta import NCBITaxonomyCreator as ntc
 class Main():
 
     def __init__(self):
-        logging.basicConfig(format='',level=logging.INFO)
+        logging.basicConfig(format='', level=logging.INFO)
         self.logger = logging.getLogger()
        
 
-    def _check_dir(self,args):
+    def _check_dir(self, args):
         if(args.directory == "home"):
-            basta_home = os.path.join(expanduser("~"),".basta");
-            args.directory = os.path.join(basta_home,"taxonomy")
+            basta_home = os.path.join(expanduser("~"), ".basta");
+            args.directory = os.path.join(basta_home, "taxonomy")
             if not os.path.isdir(basta_home):
                 os.mkdir(basta_home)
                 os.mkdir(args.directory)
 
 
-    def run_basta(self,args):
+    def run_basta(self, args):
         if args.subparser_name == 'sequence':
             self._check_dir(args)
             if not dbutils._check_complete(args.directory):
@@ -89,41 +89,41 @@ class Main():
             self._basta_taxonomy(args)
 
 
-    def _basta_sequence(self,args):
+    def _basta_sequence(self, args):
         self.logger.info("\n#### Assigning taxonomy to each sequence ###\n")
-        db_file = dbutils.get_db_name(args.directory,args.type)
-        assigner = AssignTaxonomy.Assigner(args.evalue,args.alen,args.identity,args.number,args.minimum,args.maj_perc,args.directory,args.config_path,args.output,args.hit_count)
+        db_file = dbutils.get_db_name(args.directory, args.type)
+        assigner = AssignTaxonomy.Assigner(args.evalue, args.alen, args.identity, args.number, args.minimum, args.maj_perc, args.directory, args.config_path, args.output, args.hit_count)
         if args.verbose:
             assigner.info_file = args.verbose
-        assigner._assign_sequence(args.blast,db_file,args.best_hit)
+        assigner._assign_sequence(args.blast, db_file, args.best_hit)
         self.logger.info("\n#### Done. Output written to %s" % (args.output))
 
 
-    def _basta_single(self,args):
+    def _basta_single(self, args):
         self.logger.info("\n#### Assigning one taxonomy based on all sequences ###\n")
-        db_file = dbutils.get_db_name(args.directory,args.type)
-        assigner = AssignTaxonomy.Assigner(args.evalue,args.alen,args.identity,args.number,args.minimum,args.maj_perc,args.directory,args.config_path,args.output,args.hit_count) 
+        db_file = dbutils.get_db_name(args.directory, args.type)
+        assigner = AssignTaxonomy.Assigner(args.evalue, args.alen, args.identity, args.number, args.minimum, args.maj_perc, args.directory, args.config_path, args.output, args.hit_count) 
         if args.verbose:
             assigner.info_file = args.verbose
-        lca = assigner._assign_single(args.blast,db_file,args.best_hit)
+        lca = assigner._assign_single(args.blast, db_file, args.best_hit)
         self.logger.info("\n##### Results #####\n")
         self.logger.info("Last Common Ancestor: %s\n" % (lca))
         self.logger.info("\n###################\n")
 
         
-    def _basta_multiple(self,args):
+    def _basta_multiple(self, args):
         self.logger.info("\n####  Assigning one taxonomy for each file ###\n")
         db_file = ""
-        db_file = dbutils.get_db_name(args.directory,args.type)
-        assigner = AssignTaxonomy.Assigner(args.evalue,args.alen,args.identity,args.number,args.minimum,args.maj_perc,args.directory,args.config_path,args.output,args.hit_count)
+        db_file = dbutils.get_db_name(args.directory, args.type)
+        assigner = AssignTaxonomy.Assigner(args.evalue, args.alen, args.identity, args.number, args.minimum, args.maj_perc, args.directory, args.config_path, args.output, args.hit_count)
         if args.verbose:
             assigner.info_file = args.verbose
-        assigner._assign_multiple(args.blast,db_file,args.best_hit)
+        assigner._assign_multiple(args.blast, db_file, args.best_hit)
         self.logger.info("\n###### Done. Output written to %s" % (args.output))
 
 
 
-    def _basta_download(self,args):
+    def _basta_download(self, args):
         if not os.path.exists(args.directory):
             os.makedirs(args.directory)
         self.logger.info("\n##### Downloading and processing mapping file(s) from NCBI ###\n")
@@ -137,9 +137,9 @@ class Main():
             map_file = "idmapping_selected.tab.gz"
             db_file = "prot_mapping.db"
             self.logger.info("\n# [BASTA STATUS] Downloading mapping file\n")
-            dutils.down("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/",map_file,args.directory)
+            dutils.down("ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/", map_file, args.directory)
             self.logger.info("\n# [BASTA STATUS] Creating mapping database\n")
-            dbutils.create_db(args.directory,map_file,db_file,0,12)
+            dbutils.create_db(args.directory, map_file, db_file, 0, 12)
             return
         elif args.type == "wgs":
             map_file = "nucl_wgs.accession2taxid.gz"
@@ -158,34 +158,34 @@ class Main():
             db_file = "gb_mapping.db"
 
         self.logger.info("\n# [BASTA STATUS] Downloading mapping files\n")
-        dutils.down_and_check(args.ftp,map_file,args.directory)
+        dutils.down_and_check(args.ftp, map_file, args.directory)
         self.logger.info("\n# [BASTA STATUS] Creating mapping database\n")
-        dbutils.create_db(args.directory,map_file,db_file,0,2)
+        dbutils.create_db(args.directory, map_file, db_file, 0, 2)
         self.logger.info("\n##### Done. Downloaded and processed file %s\n" % (map_file))
 
 
-    def _basta_create_db(self,args):
+    def _basta_create_db(self, args):
         if not os.path.exists(args.directory):
             os.makedirs(args.directory)
         self.logger.info("\n#### Creating database\n")
-        dbutils.create_db(args.directory,args.input,args.output,args.key,args.value)
+        dbutils.create_db(args.directory, args.input, args.output, args.key, args.value)
         self.logger.info("\n#### Done. Processed file %s\n" % (args.input))
 
 
-    def _basta_taxonomy(self,args):
+    def _basta_taxonomy(self, args):
         if not os.path.exists(args.directory):
             os.makedirs(args.directory)
         self.logger.info("\n#### Downloading and processing NCBI taxonomy files\n")
         self.logger.info("\n# [BASTA STATUS] Download taxonomy files")
-        dutils.down_and_check("ftp://ftp.ncbi.nih.gov/pub/taxonomy/","taxdump.tar.gz",args.directory)
-        call(["tar", "-xzvf", os.path.join(args.directory,"taxdump.tar.gz"), "-C", args.directory])
+        dutils.down_and_check("ftp://ftp.ncbi.nih.gov/pub/taxonomy/", "taxdump.tar.gz", args.directory)
+        call(["tar", "-xzvf", os.path.join(args.directory, "taxdump.tar.gz"), "-C", args.directory])
 
         self.logger.info("\n# [BASTA STATUS] Creating complete taxonomy file\n")
-        tax_creator = ntc.Creator(os.path.join(args.directory,"names.dmp"),os.path.join(args.directory,"nodes.dmp"))
-        tax_creator._write(os.path.join(args.directory,"complete_taxa"))
+        tax_creator = ntc.Creator(os.path.join(args.directory, "names.dmp"), os.path.join(args.directory, "nodes.dmp"))
+        tax_creator._write(os.path.join(args.directory, "complete_taxa"))
 
         self.logger.info("\n# [BASTA STATUS] Creating taxonomy database")
-        dbutils.create_db(args.directory,"complete_taxa.gz","complete_taxa.db",0,1)
+        dbutils.create_db(args.directory, "complete_taxa.gz", "complete_taxa.db", 0, 1)
 
         self.logger.info("\n### Done! NCBI taxonomy database created in %s ####" % (args.directory))
 

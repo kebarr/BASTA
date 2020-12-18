@@ -33,20 +33,20 @@ import logging
 
 def main(args):
     
-    logging.basicConfig(format='',level=logging.INFO)
+    logging.basicConfig(format='', level=logging.INFO)
     logger = logging.getLogger()
 
     logger.info("\n[BASTA STATUS] Reading BASTA taxonomy\n")
-    hit_seqs = _get_seqs(args.basta,args.level,args.name)
-    oh = open(args.output,"w")
+    hit_seqs = _get_seqs(args.basta, args.level, args.name)
+    oh = open(args.output, "w")
     p = 0
     logger.info("\n[BASTA STATUS] Parsing fasta file\n")
     with open(args.fasta) as f:
-        for (num,line) in enumerate(f):
+        for (num, line) in enumerate(f):
             if not num%1000000:
                 logger.info("\tLines parsed: %d" % num)
             if line[0]==">":
-                if line.replace(">"," ").replace("."," ").split()[0] in hit_seqs:
+                if line.replace(">", " ").replace(".", " ").split()[0] in hit_seqs:
                     p = 1
                 else:
                     p = 0
@@ -58,13 +58,13 @@ def main(args):
 
 
 
-def _get_seqs(bf,l,n):
-    levels = ["kingdom","phylum","class","order","family","genus","species"]
+def _get_seqs(bf, l, n):
+    levels = ["kingdom", "phylum", "class", "order", "family", "genus", "species"]
     seqs = {} 
 
-    with open(bf,"r") as f:
+    with open(bf, "r") as f:
         for line in f:
-            ls = filter(None,line.split("\t"))
+            ls = [_f for _f in line.split("\t") if _f]
             if l:
                 try:
                     if ls[1].split(";")[levels.index(l)] == n:
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("output", help="Filtered output file")
     parser.add_argument("name", help="Name Taxonomy of sequence has to include (case sensitive)")
     parser.add_argument("basta", help="BASTA taxonomy file")
-    parser.add_argument("-l","--level", help="If set name has to match taxonomic level", choices=["kingdom","phylum","order","class","family","genus","species"], default="")
+    parser.add_argument("-l", "--level", help="If set name has to match taxonomic level", choices=["kingdom", "phylum", "order", "class", "family", "genus", "species"], default="")
 
     args = parser.parse_args()
     main(args)

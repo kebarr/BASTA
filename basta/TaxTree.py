@@ -31,25 +31,25 @@ class TTree(object):
         self.taxon=""
 
     # Add new taxon to the tree
-    def add_taxon(self,tree,string):
+    def add_taxon(self, tree, string):
         ts = self._get_known_strings(string)
-        self._add(tree,ts)
+        self._add(tree, ts)
 
     # Walk through tree and add each level of new taxon
-    def _add(self,tree,taxon):
+    def _add(self, tree, taxon):
         i = taxon.pop(0) if taxon else 0
         if i:
             if i in tree:
                 tree[i]['count']+=1
             else:
                 tree[i]={"count":1}
-            self._add(tree[i],taxon)
+            self._add(tree[i], taxon)
 
 
-    def lca(self,min_count,total,m_perc):
+    def lca(self, min_count, total, m_perc):
         # get at least one more than half
-        m_count = max(int(round(total * (m_perc / 100.0))),int(total/2)+1)
-        self.taxon = self.create_lca(self.tree,self.taxon,min_count,m_count)
+        m_count = max(int(round(total * (m_perc / 100.0))), int(total/2)+1)
+        self.taxon = self.create_lca(self.tree, self.taxon, min_count, m_count)
         if not self.taxon:
             self.taxon = "Unknown"
         return self.taxon
@@ -59,7 +59,7 @@ class TTree(object):
     # a) is included in the majority of hits
     # b) the majority is >= given percentage of majority
     # b) includes more hits than given minimum
-    def create_lca(self,tree,t,min,m_count):
+    def create_lca(self, tree, t, min, m_count):
         counts = [tree[x]['count'] for x in tree if x != 'count' and tree[x]['count'] >= m_count]
         if counts:
             for b in tree:
@@ -68,12 +68,12 @@ class TTree(object):
                 if tree[b]['count']<min:
                     continue
                 if tree[b]['count'] in counts:
-                    return self.create_lca(tree[b],t + str(b) + ";",min,m_count)
+                    return self.create_lca(tree[b], t + str(b) + ";", min, m_count)
         else:
             return t.replace("\n", "").replace(";;", ";")
 
     # remove species
-    def _get_known_strings(self,string):
+    def _get_known_strings(self, string):
         # Previously removed species to not remove unknowns
         # ts = string.split(";")[:-2]
         # Remove unknowns ... yes? No? ... think about it

@@ -37,22 +37,22 @@ def main(args):
     file_counts ={} 
     for f in args.input.split(","):
         file_counts[f] = _parseBASTA(f)
-    _writeKrona(file_counts,args.output)
+    _writeKrona(file_counts, args.output)
 
-def _writeKrona(counts,of):
+def _writeKrona(counts, of):
 
     paths = []
     for c in counts:
         fn = c.split("/")[-1]
-        pathfd,path = tempfile.mkstemp()
-        with os.fdopen(pathfd,"w") as tf:
+        pathfd, path = tempfile.mkstemp()
+        with os.fdopen(pathfd, "w") as tf:
             for tax in counts[c]:
                 ts = "root\t" + "\t".join(tax.split(";"))
-                tf.write("%s\t%s" % (counts[c][tax],ts))
+                tf.write("%s\t%s" % (counts[c][tax], ts))
         paths.append(str(path) + "," + str(fn))
     fn_str = " ".join(paths)
-    cmd = "ktImportText -o %s %s" % (of,fn_str)
-    subprocess.check_call(cmd,shell=True)
+    cmd = "ktImportText -o %s %s" % (of, fn_str)
+    subprocess.check_call(cmd, shell=True)
     for p in paths:
         os.remove(p.split(",")[0]) 
 
@@ -61,9 +61,9 @@ def _writeKrona(counts,of):
 def _parseBASTA(bf):
 
     counts = {}
-    with open(bf,"r") as f:
+    with open(bf, "r") as f:
         for line in f:
-            ls = filter(None,line.split("\t"))
+            ls = [_f for _f in line.split("\t") if _f]
             try:
                 counts[ls[1]] += 1 
             except KeyError:

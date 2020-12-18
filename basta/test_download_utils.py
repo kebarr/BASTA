@@ -12,16 +12,16 @@ class TestDown(unittest.TestCase):
     
     
     def test_wget(self):
-        du.wget_file("www.google.com","index.html",self.pwd)
-        self.assertTrue(os.path.isfile(os.path.join(self.pwd,"index.html")))
-        os.remove(os.path.join(self.pwd,"index.html"))
+        du.wget_file("www.google.com", "index.html", self.pwd)
+        self.assertTrue(os.path.isfile(os.path.join(self.pwd, "index.html")))
+        os.remove(os.path.join(self.pwd, "index.html"))
 
     def test_md5(self):
-        with open(os.path.join(self.pwd,"test.file"),"w") as f:
+        with open(os.path.join(self.pwd, "test.file"), "w") as f:
             f.write("md5 test file")
 
-        self.assertTrue(self.pwd,"test.md5")
-        os.remove(os.path.join(self.pwd,"test.file"))
+        self.assertTrue(self.pwd, "test.md5")
+        os.remove(os.path.join(self.pwd, "test.file"))
 
 
 if __name__ =='__main__':

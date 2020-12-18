@@ -33,22 +33,22 @@ import logging
 
 def main(args):
     
-    logging.basicConfig(format='',level=logging.INFO)
+    logging.basicConfig(format='', level=logging.INFO)
     logger = logging.getLogger()
 
     logger.info("\n[BASTA STATUS] Reading BASTA taxonomy\n")
     taxa = _get_taxa(args.basta)
 
     logger.info("\n[BASTA STATUS] Reading Reading cluster file\n")
-    clusters = _get_clusters(args.uc,taxa)
+    clusters = _get_clusters(args.uc, taxa)
 
     logger.info("\n[BASTA STATUS] Writing output file\n")
-    _print_output(args.output,clusters)
+    _print_output(args.output, clusters)
 
 
 
-def _print_output(output,clusters):
-    oh = open(output,"w")
+def _print_output(output, clusters):
+    oh = open(output, "w")
     for c in clusters:
         oh.write("#%s\n" % (c))
         for a in clusters[c]:
@@ -58,7 +58,7 @@ def _print_output(output,clusters):
 
 def _get_taxa(basta):
     taxa = {}
-    with open(basta,"r") as f:
+    with open(basta, "r") as f:
         for line in f:
             if line == "\n":
                 continue
@@ -69,9 +69,9 @@ def _get_taxa(basta):
 
 
 
-def _get_clusters(uc_file,taxa):
+def _get_clusters(uc_file, taxa):
     clusters = {}
-    with open(uc_file,"r") as f:
+    with open(uc_file, "r") as f:
         for line in f:
             cols = line.split()
             if cols[0] == "S":

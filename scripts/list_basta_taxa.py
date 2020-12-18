@@ -38,31 +38,31 @@ from basta import DBUtils as db
 
 def main(args):
     
-    logging.basicConfig(format='',level=logging.INFO)
+    logging.basicConfig(format='', level=logging.INFO)
     logger = logging.getLogger()
 
     logger.info("\n[STATUS] Reading list file\n")
     seqs = _get_seqs(args.list)
 
     logger.info("\n# [STATUS] Fetching taxonomies")
-    taxa = _fetch_taxonomies(seqs,args,logger)
+    taxa = _fetch_taxonomies(seqs, args, logger)
 
 
-    with open(args.output,"w") as f:
-        for s in taxa.keys():
-            f.write("%s\t%s\n" % (s,taxa[s]))
+    with open(args.output, "w") as f:
+        for s in list(taxa.keys()):
+            f.write("%s\t%s\n" % (s, taxa[s]))
     
 
-def _fetch_taxonomies(seqs,args,logger):
+def _fetch_taxonomies(seqs, args, logger):
     tax_dict = {}
 
     logger.info("\n# [STATUS] Initializing taxonomy database")
-    tax_lookup = db._init_db(os.path.join(args.directory,"complete_taxa.db"))
+    tax_lookup = db._init_db(os.path.join(args.directory, "complete_taxa.db"))
 
 
     logger.info("\n# [STATUS] Initializing mapping database")
-    db_file = db.get_db_name(args.directory,args.dbtype)
-    map_lookup = db._init_db(os.path.abspath(os.path.join(args.directory,db_file)))
+    db_file = db.get_db_name(args.directory, args.dbtype)
+    map_lookup = db._init_db(os.path.abspath(os.path.join(args.directory, db_file)))
 
     for s in seqs:
         taxon_id = map_lookup.get(s)
@@ -81,9 +81,9 @@ def _fetch_taxonomies(seqs,args,logger):
 
 def _get_seqs(lf):
     seqs = []
-    with open(lf,"r") as f:
+    with open(lf, "r") as f:
         for line in f:
-            seq=line.replace(" ","").replace("\n","")
+            seq=line.replace(" ", "").replace("\n", "")
             seqs.append(seq)
     return seqs
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     parser.add_argument("list", help="List of accession numbers, one per line")
     parser.add_argument("output", help="Output taxonomy file")
     parser.add_argument("dbtype", help="Type of mapping file to use, e.g. nucl (nt), prot (uniprot) etc")
-    parser.add_argument("-d", "--directory", help="directory of database files (default: BASTA_ROOT/taxonomy)", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"../taxonomy")))
+    parser.add_argument("-d", "--directory", help="directory of database files (default: BASTA_ROOT/taxonomy)", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "../taxonomy")))
     args = parser.parse_args()
     main(args)
 

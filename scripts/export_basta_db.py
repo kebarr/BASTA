@@ -38,41 +38,41 @@ from basta import DBUtils as db
 
 def main(args):
     
-    logging.basicConfig(format='',level=logging.INFO)
+    logging.basicConfig(format='', level=logging.INFO)
     logger = logging.getLogger()
 
     logger.info("\n# [STATUS] Exporting mapping file")
-    _fetch_mapping(args,logger)
+    _fetch_mapping(args, logger)
 
     logger.info("\n# [STATUS] Exporting taxonomies file")
-    _fetch_taxonomies(args,logger)
+    _fetch_taxonomies(args, logger)
 
 
    
 
-def _fetch_mapping(args,logger):
+def _fetch_mapping(args, logger):
     logger.info("\n# [STATUS] Initializing mapping database")
-    db_file = db.get_db_name(args.directory,args.dbtype)
-    map_lookup = db._init_db(os.path.abspath(os.path.join(args.directory,db_file)))
-    with open(args.mapout,"w") as f:
-        for k,v in map_lookup:
-            f.write("%s\t%s\n" % (k,v))
+    db_file = db.get_db_name(args.directory, args.dbtype)
+    map_lookup = db._init_db(os.path.abspath(os.path.join(args.directory, db_file)))
+    with open(args.mapout, "w") as f:
+        for k, v in map_lookup:
+            f.write("%s\t%s\n" % (k, v))
 
 
 
-def _fetch_taxonomies(args,logger):
+def _fetch_taxonomies(args, logger):
     tax_dict = {}
 
     logger.info("\n# [STATUS] Initializing taxonomy database")
 
-    db_file = db.get_db_name(args.directory,args.dbtype)
-    map_lookup = db._init_db(os.path.abspath(os.path.join(args.directory,db_file)))
-    tax_lookup = db._init_db(os.path.join(args.directory,"complete_taxa.db"))
+    db_file = db.get_db_name(args.directory, args.dbtype)
+    map_lookup = db._init_db(os.path.abspath(os.path.join(args.directory, db_file)))
+    tax_lookup = db._init_db(os.path.join(args.directory, "complete_taxa.db"))
 
     not_found = {}
 
-    with open(args.dbout,"w") as f:
-        for k,v in map_lookup:
+    with open(args.dbout, "w") as f:
+        for k, v in map_lookup:
             tax_string = tax_lookup.get(v)
             if not tax_string:
                 if v in not_found:
@@ -81,16 +81,16 @@ def _fetch_taxonomies(args,logger):
                     logger.warning("\n# [WARNING] No taxon found for %d " % (int(v)))
                     not_found[v] = 1
                     continue    
-            f.write("%s\t%s\n" % (v,tax_string))
+            f.write("%s\t%s\n" % (v, tax_string))
     
 
 
 
 def _get_seqs(lf):
     seqs = []
-    with open(lf,"r") as f:
+    with open(lf, "r") as f:
         for line in f:
-            seq=line.replace(" ","").replace("\n","")
+            seq=line.replace(" ", "").replace("\n", "")
             seqs.append(seq)
     print(seqs)
     return seqs
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument("dbout", help="Output file for database")
     parser.add_argument("mapout", help="Output file for mapping file")
     parser.add_argument("dbtype", help="Type of mapping file to use, e.g. nucl (nt), prot (uniprot) etc")
-    parser.add_argument("-d", "--directory", help="directory of database files (default: BASTA_ROOT/taxonomy)", default=os.path.abspath(os.path.join(os.path.dirname(__file__),"../taxonomy")))
+    parser.add_argument("-d", "--directory", help="directory of database files (default: BASTA_ROOT/taxonomy)", default=os.path.abspath(os.path.join(os.path.dirname(__file__), "../taxonomy")))
     args = parser.parse_args()
     main(args)
 

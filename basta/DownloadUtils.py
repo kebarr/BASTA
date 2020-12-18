@@ -33,37 +33,37 @@ import logging
 
 
 # Download files using wget
-def wget_file(path,f,outdir):
-    os.system("wget -O %s/%s %s/%s" % (outdir,f,path,f))
+def wget_file(path, f, outdir):
+    os.system("wget -O %s/%s %s/%s" % (outdir, f, path, f))
 
 
 # Check MD5 sum of givenfile
-def check_md5(f,path):
-    with open(os.path.join(path,f)) as f:
+def check_md5(f, path):
+    with open(os.path.join(path, f)) as f:
         fl = f.readline()
-        l = filter(None,fl.split())
+        l = [_f for _f in fl.split() if _f]
         filehash = hashlib.md5()
-        filehash.update(open(os.path.join(path,l[1])).read())
+        filehash.update(open(os.path.join(path, l[1])).read())
         if str(filehash.hexdigest()) != str(l[0]):
             return 1
         else:
             return 0
 
-def down_and_check(ftp,fn,out_dir):
+def down_and_check(ftp, fn, out_dir):
 
-    down(ftp,fn,out_dir)
+    down(ftp, fn, out_dir)
     md5 = fn + ".md5"
-    down(ftp,md5,out_dir)
+    down(ftp, md5, out_dir)
 
     logger = logging.getLogger()
     logger.info("\n# [BASTA STATUS] Checking MD5 sum of file\n")
-    while(check_md5(md5,out_dir)):
+    while(check_md5(md5, out_dir)):
             logger.error("\n# [BASTA ERROR] MD5 sum mismatch.\n")
-            down(ftp,md5,out_dir)
+            down(ftp, md5, out_dir)
 
 
-def down(ftp,fn,out_dir):
+def down(ftp, fn, out_dir):
     logger = logging.getLogger()
     logger.info("\n# [BASTA STATUS] (Re-)Downloading file %s\n" % (fn))
-    wget_file(ftp,fn,out_dir) 
+    wget_file(ftp, fn, out_dir) 
 

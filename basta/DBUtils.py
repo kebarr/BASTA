@@ -34,7 +34,7 @@ import timeit
 #
 
 
-def create_db(path,f,of,i1,i2):
+def create_db(path, f, of, i1, i2):
 
     of = _check_file_name(of)
 
@@ -42,9 +42,9 @@ def create_db(path,f,of,i1,i2):
     if os.path.exists(f):
         ip = f
     else:
-        ip = os.path.join(path,f)
+        ip = os.path.join(path, f)
 
-    op = os.path.join(path,of)
+    op = os.path.join(path, of)
 
     lookup = plyvel.DB(op, create_if_missing=True)
     wb = lookup.write_batch()
@@ -52,19 +52,19 @@ def create_db(path,f,of,i1,i2):
 
     timetotal = 0
     try:
-        with (gzip.open(ip,"r") if ip.endswith(".gz") else open(ip,"r")) as f:
+        with (gzip.open(ip, "r") if ip.endswith(".gz") else open(ip, "r")) as f:
             start_time = timeit.default_timer()
-            for count,line in enumerate(f):
+            for count, line in enumerate(f):
                 if not count % 1000000:
                     if not count:
                         continue
                     elapsed = timeit.default_timer() - start_time
                     timetotal+=elapsed
                     num = count/1000000
-                    logger.info("\n# [BASTA STATUS] %d lines processed (avg time: %fsec)" % (count,timetotal/num))
+                    logger.info("\n# [BASTA STATUS] %d lines processed (avg time: %fsec)" % (count, timetotal/num))
                     start_time = timeit.default_timer()
                 ls = line.strip("\n").split("\t")
-                lookup.put(ls[i1],ls[i2])
+                lookup.put(ls[i1], ls[i2])
             lookup.close()
     except IOError:
         logger.error("\n# [BASTA ERROR] No file %s: did you forget to download mapping file (parameter -d True)?" % (ip))
@@ -83,16 +83,16 @@ def _check_file_name(name):
 
 
 
-def get_db_name(path,db_type):
+def get_db_name(path, db_type):
     db_name = db_type + "_mapping.db"
-    if not os.path.isdir(os.path.join(path,db_name)):
+    if not os.path.isdir(os.path.join(path, db_name)):
         logger = logging.getLogger()
-        logger.error("\n# [BASTA ERROR] No database %s found in %s. Did you forget to create the specified database or was it a typo?" % (db_name,path))
+        logger.error("\n# [BASTA ERROR] No database %s found in %s. Did you forget to create the specified database or was it a typo?" % (db_name, path))
         sys.exit()
     return db_name
 
 def _check_complete(path):
-    if os.path.isdir(os.path.join(path,"complete_taxa.db")):
+    if os.path.isdir(os.path.join(path, "complete_taxa.db")):
         return 1
     else:
         return None 
