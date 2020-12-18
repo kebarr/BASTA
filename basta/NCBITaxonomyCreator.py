@@ -42,7 +42,7 @@ class Creator():
 
     # Start writing output zip file
     def _write(self, out):
-        oh = gzip.open(out + ".gz", "w")
+        oh = gzip.open(out + ".gz", "wb")
         self._walk(oh, self.tree["1"], "", "1")
         oh.close()
 
@@ -89,7 +89,8 @@ class Creator():
                 self.logger.error("\n# [BASTA ERROR] Wrong number of taxa in string %s" % (current))
                 sys.exit()
 
-        oh.write("%s\t%s\n" % (taxon_id, current))
+        string = "%s\t%s\n" % (taxon_id, current)
+        oh.write(string.encode('utf-8'))
 
         # Walk through child nodes of this level
         for k in tree:

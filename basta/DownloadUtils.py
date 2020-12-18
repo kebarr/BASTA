@@ -43,7 +43,7 @@ def check_md5(f, path):
         fl = f.readline()
         l = [_f for _f in fl.split() if _f]
         filehash = hashlib.md5()
-        filehash.update(open(os.path.join(path, l[1])).read())
+        filehash.update(open(os.path.join(path, l[1]), 'rb').read())
         if str(filehash.hexdigest()) != str(l[0]):
             return 1
         else:
