@@ -63,8 +63,8 @@ def create_db(path, f, of, i1, i2):
                     num = count/1000000
                     logger.info("\n# [BASTA STATUS] %d lines processed (avg time: %fsec)" % (count, timetotal/num))
                     start_time = timeit.default_timer()
-                ls = line.strip("\n").split("\t")
-                lookup.put(ls[i1], ls[i2])
+                ls = line.decode('utf-8').strip("\n").split("\t")
+                lookup.put(ls[i1].encode('utf-8'), ls[i2].encode('utf-8'))
             lookup.close()
     except IOError:
         logger.error("\n# [BASTA ERROR] No file %s: did you forget to download mapping file (parameter -d True)?" % (ip))
